@@ -1,3 +1,4 @@
+import traceback
 import requests
 import json
 import time
@@ -27,7 +28,8 @@ class Program:
         self.engine = True
 
         self.gdip = ""
-        self.myip = requests.get("https://api.ipify.org").content.decode("utf-8")
+        self.myip = ""
+        self.error_occured = False
 
         self.request_url = ReqUrl.get_url()
 
@@ -36,13 +38,47 @@ class Program:
 
         # Log failure in the console
         if not r.ok:
-            print(Fore.RED + "Failed to get rest_api" + Fore.RESET)
+            print(Fore.RED + "Failed to get rest_api, Error Code: " + str(r.status_code))
+            print(f"Response:\n {r.text}", end=Fore.RESET)
+            print()
 
-        # Log response to get_response
-        self.get_response = json.loads(r.content.decode("utf-8"))[0]
+            return False
 
-        # Save current gdip from response
-        self.gdip = self.get_response["data"]
+        try:
+            # Log response to get_response
+            self.get_response = json.loads(r.content.decode("utf-8"))[0]
+
+            # Save current gdip from response
+            self.gdip = self.get_response["data"]
+        except Exception:
+            print(Fore.RED + "Failed to get rest_api, unable to decode JSON !")
+            traceback.print_exc()
+            print(Fore.RESET)
+
+            return False
+
+        return True
+
+    def get_public_ip(self):
+        r = requests.get("https://api.ipify.org")
+
+        if not r.ok:
+            print("Failed to get public_ip, Error Code: " + str(r.status_code))
+            print(f"Response:\n {r.text}")
+            print()
+
+            return False
+
+        try:
+            self.myip = r.content.decode("utf-8")
+        except Exception:
+            print(Fore.RED + "Failed to get public_ip, unable to decode content !")
+            traceback.print_exc()
+            print(Fore.RESET)
+
+            return False
+
+        return True
 
     def put(self):
         payload = [{"data": f"{(self.myip)}"}]
@@ -65,8 +101,17 @@ class Program:
             # Get current datetime
             now = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
 
-            # Update IP
-            self.get()
+            # Get Current IP from API
+            if not self.get():
+                # Check every <seconds>
+                time.sleep(self.refresh)
+                continue
+
+            # Get Current Public IP
+            if not self.get_public_ip():
+                # Check every <seconds>
+                time.sleep(self.refresh)
+                continue
 
             if self.gdip != self.myip and self.myip != "":
                 print("\n")
@@ -101,10 +146,6 @@ class Program:
 
             # Check every <seconds>
             time.sleep(self.refresh)
-
-            # Temporary solution until the issue.1 is fixed.
-            program.runEngine()
-            return
 
 
 if __name__ == "__main__":
