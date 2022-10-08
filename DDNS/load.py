@@ -6,7 +6,7 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 
 class Load:
     def __init__(self):
-        self.filename = __location__ + "\\" + "config.json"
+        self.filename = os.path.join(__location__, "config.json")
 
 
     def get_json(self):
