@@ -1,0 +1,9 @@
+{
+    "refresh_rate": 120,
+
+    "dns_record": "mainIpAddr",
+
+    "mydomain": "mydomain.com",
+
+    "gdapikey": "key:secret"
+}
