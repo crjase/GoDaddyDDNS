@@ -11,6 +11,8 @@ The current release(s) will not be compiled until they are out of pre-release.
   <li style="display: inline-block; padding: 10px 20px;">
     <a href="https://crjase.net">CRJASE</a>
     <img src="https://avatars.githubusercontent.com/u/25498208?s=40&v=4"></img>
+  </li>
+  <li>
     <a href="https://crjase.net">CRJASE</a>
     <img src="https://avatars.githubusercontent.com/u/25498208?s=40&v=4"></img>
   </li>
